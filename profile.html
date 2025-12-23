@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Arjanmal Attarchand</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .profile-container {
+            background: #2a2a2a;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+            border: 2px solid #FFD700;
+            max-width: 800px;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #FFD700;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #000000;
+            border: 4px solid #FFD700;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .profile-info h2 {
+            color: #FFD700;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .profile-info p {
+            color: #ffffff;
+            font-size: 16px;
+        }
+
+        .profile-section {
+            margin-bottom: 32px;
+        }
+
+        .profile-section h3 {
+            color: #FFD700;
+            font-size: 20px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #FFD700;
+        }
+
+        .info-row {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .info-value {
+            color: #FFD700;
+        }
+
+        .btn-edit-profile {
+            padding: 10px 24px;
+            background: #FFD700;
+            color: #000000;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-edit-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 215, 0, 0.5);
+            background: #FFED4E;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div id="dashboardPage" class="dashboard-container" style="display: flex;">
+            <!-- Header Placeholder -->
+            <div id="header-placeholder"></div>
+
+            <!-- Dashboard Body -->
+            <div class="dashboard-body">
+                <!-- Sidebar Placeholder -->
+                <div id="sidebar-placeholder"></div>
+
+                <!-- Main Content -->
+                <main class="main-content">
+                    <div class="content-header">
+                        <h1>Profile</h1>
+                        <p>Manage your account settings</p>
+                    </div>
+                    <div class="content-body">
+                        <div class="profile-container">
+                            <div class="profile-header">
+                                <div class="profile-avatar-large" id="profileViewAvatar">
+                                    <img id="profileViewAvatarImg" src="" alt="Profile" style="display: none;">
+                                    <span id="profileViewAvatarText">A</span>
+                                </div>
+                                <div class="profile-info">
+                                    <h2 id="profileViewName">Admin User</h2>
+                                    <p id="profileViewRole">Administrator</p>
+                                    <button class="btn-edit-profile" onclick="window.location.href='profile-settings.html'">Edit Profile</button>
+                                </div>
+                            </div>
+
+                            <div class="profile-section">
+                                <h3>Personal Information</h3>
+                                <div class="info-row">
+                                    <div class="info-label">User ID:</div>
+                                    <div class="info-value" id="profileViewUserId">ADM001</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Full Name:</div>
+                                    <div class="info-value" id="profileViewFullName">Admin User</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Email:</div>
+                                    <div class="info-value" id="profileViewEmail">admin@example.com</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Phone:</div>
+                                    <div class="info-value" id="profileViewPhone">-</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Role:</div>
+                                    <div class="info-value" id="profileViewRoleValue">Administrator</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Bio:</div>
+                                    <div class="info-value" id="profileViewBio">-</div>
+                                </div>
+                            </div>
+
+                            <div class="profile-section">
+                                <h3>Account Settings</h3>
+                                <div class="info-row">
+                                    <div class="info-label">Account Status:</div>
+                                    <div class="info-value">
+                                        <span class="badge badge-active">Active</span>
+                                    </div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Last Login:</div>
+                                    <div class="info-value">Today</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Password:</div>
+                                    <div class="info-value">
+                                        <button class="btn-edit-profile" onclick="alert('Change password functionality will be implemented')">Change Password</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="profile-section">
+                                <h3>Statistics</h3>
+                                <div class="info-row">
+                                    <div class="info-label">Total Products Added:</div>
+                                    <div class="info-value" id="totalProductsAdded">0</div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Active Products:</div>
+                                    <div class="info-value" id="activeProductsCount">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Footer Placeholder -->
+            <div id="footer-placeholder"></div>
+        </div>
+    </div>
+    <script src="js/partials-loader.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/header-handler.js"></script>
+    <script>
+        // Load and display user profile data
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            
+            // Set defaults if no data
+            if (!userData.userId) {
+                userData.userId = 'ADM001';
+                userData.fullName = 'Admin User';
+                userData.email = 'admin@example.com';
+                userData.phone = '';
+                userData.role = 'Administrator';
+                userData.bio = '';
+                userData.avatar = '';
+                localStorage.setItem('userData', JSON.stringify(userData));
+            }
+            
+            // Update profile view
+            document.getElementById('profileViewUserId').textContent = userData.userId || 'ADM001';
+            document.getElementById('profileViewName').textContent = userData.fullName || 'Admin User';
+            document.getElementById('profileViewFullName').textContent = userData.fullName || 'Admin User';
+            document.getElementById('profileViewEmail').textContent = userData.email || 'admin@example.com';
+            document.getElementById('profileViewPhone').textContent = userData.phone || '-';
+            document.getElementById('profileViewRole').textContent = userData.role || 'Administrator';
+            document.getElementById('profileViewRoleValue').textContent = userData.role || 'Administrator';
+            document.getElementById('profileViewBio').textContent = userData.bio || '-';
+            
+            // Update avatar
+            const avatarImg = document.getElementById('profileViewAvatarImg');
+            const avatarText = document.getElementById('profileViewAvatarText');
+            if (userData.avatar) {
+                avatarImg.src = userData.avatar;
+                avatarImg.style.display = 'block';
+                avatarText.style.display = 'none';
+            } else {
+                avatarText.textContent = (userData.fullName || 'A').charAt(0).toUpperCase();
+                avatarText.style.display = 'block';
+                avatarImg.style.display = 'none';
+            }
+            
+            // Update profile statistics
+            const products = JSON.parse(localStorage.getItem('products') || '[]');
+            document.getElementById('totalProductsAdded').textContent = products.length;
+            document.getElementById('activeProductsCount').textContent = products.filter(p => p.active).length;
+        });
+    </script>
+</body>
+</html>
+
