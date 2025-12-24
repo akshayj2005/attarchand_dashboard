@@ -90,8 +90,27 @@ function initializeHamburger() {
             hamburgerBtn.setAttribute('data-initialized', 'true');
             
             hamburgerBtn.addEventListener('click', () => {
-                sidebar.classList.toggle('minimized');
-                updateMainContentMargin();
+                // On mobile, toggle mobile-open class instead of minimized
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.toggle('mobile-open');
+                    // Add overlay when sidebar opens on mobile
+                    if (sidebar.classList.contains('mobile-open')) {
+                        const overlay = document.createElement('div');
+                        overlay.className = 'sidebar-overlay';
+                        overlay.id = 'sidebarOverlay';
+                        document.body.appendChild(overlay);
+                        overlay.addEventListener('click', () => {
+                            sidebar.classList.remove('mobile-open');
+                            overlay.remove();
+                        });
+                    } else {
+                        const overlay = document.getElementById('sidebarOverlay');
+                        if (overlay) overlay.remove();
+                    }
+                } else {
+                    sidebar.classList.toggle('minimized');
+                    updateMainContentMargin();
+                }
             });
             
             // Initialize margin on load
