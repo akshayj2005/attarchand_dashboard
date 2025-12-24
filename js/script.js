@@ -7,10 +7,11 @@ let multiSelectData = {
     size: [],
     color: [],
     shape: [],
-    neckSize: [],
     neckType: [],
     material: [],
-    usage: []
+    fragrances: [],
+    fragrance: [],
+    jarsBottles: []
 };
 
 // Initialize when DOM is loaded
@@ -33,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
         }, 100);
     }
-});
 });
 
 function initializeApp() {
@@ -79,10 +79,10 @@ function initializeApp() {
     const addSizeBtn = document.getElementById('addSize');
     const addColorBtn = document.getElementById('addColor');
     const addShapeBtn = document.getElementById('addShape');
-    const addNeckSizeBtn = document.getElementById('addNeckSize');
     const addNeckTypeBtn = document.getElementById('addNeckType');
     const addMaterialBtn = document.getElementById('addMaterial');
-    const addUsageBtn = document.getElementById('addUsage');
+    const addFragrancesBtn = document.getElementById('addFragrances');
+    const addJarsBottlesBtn = document.getElementById('addJarsBottles');
 
     // Update main content margin based on sidebar state (helper function)
     function updateMainContentMargin() {
@@ -271,8 +271,8 @@ function initializeApp() {
         });
     }
 
-    // Multi-Select Functionality
-    function initMultiSelect() {
+    // Multi-Select Functionality - Make it globally accessible
+    window.initMultiSelect = function() {
         const multiSelectDisplays = document.querySelectorAll('.multi-select-display');
         
         if (multiSelectDisplays.length === 0) {
@@ -294,6 +294,12 @@ function initializeApp() {
             }
             
             display.addEventListener('click', (e) => {
+                // Don't trigger if clicking on a remove tag button
+                if (e.target.classList.contains('remove-tag')) {
+                    return;
+                }
+                
+                // Allow clicking anywhere else on the display to open dropdown
                 e.stopPropagation();
                 e.preventDefault();
                 
@@ -312,7 +318,9 @@ function initializeApp() {
                 display.classList.toggle('open');
                 
                 if (dropdown.classList.contains('open')) {
-                    updateDropdownOptions(target, dropdown);
+                    if (typeof window.updateDropdownOptions === 'function') {
+                        window.updateDropdownOptions(target, dropdown);
+                    }
                 }
             });
         });
@@ -332,9 +340,13 @@ function initializeApp() {
                 }
             });
         }
-    }
+    };
+    
+    // Also create a local reference for use within initializeApp
+    const initMultiSelect = window.initMultiSelect;
 
-    function updateDropdownOptions(target, dropdown) {
+    // Make updateDropdownOptions globally accessible
+    window.updateDropdownOptions = function(target, dropdown) {
         // First try to get from localStorage (for add-product page)
         const unitsData = JSON.parse(localStorage.getItem('unitsData') || '{}');
         let options = [];
@@ -345,10 +357,11 @@ function initializeApp() {
             'size': 'sizes',
             'color': 'colors',
             'shape': 'shapes',
-            'neckSize': 'neckSizes',
             'neckType': 'neckTypes',
             'material': 'materials',
-            'usage': 'usage'
+            'fragrances': 'fragrances',
+            'fragrance': 'fragrances',
+            'jarsBottles': 'jarsBottles'
         };
         
         const storageKey = targetMap[target];
@@ -356,7 +369,20 @@ function initializeApp() {
             options = unitsData[storageKey];
         } else {
             // Fallback to DOM if on units page
-            const listId = target + 'List';
+            // Map target names to list IDs
+            const listIdMap = {
+                'subCategory': 'subCategoryList',
+                'size': 'sizeList',
+                'color': 'colorList',
+                'shape': 'shapeList',
+                'neckType': 'neckTypeList',
+                'material': 'materialList',
+                'fragrances': 'fragrancesList',
+                'fragrance': 'fragrancesList',
+                'jarsBottles': 'jarsBottlesList'
+            };
+            
+            const listId = listIdMap[target] || (target + 'List');
             const list = document.getElementById(listId);
             if (list) {
                 options = Array.from(list.querySelectorAll('.unit-item-text')).map(el => el.textContent);
@@ -368,8 +394,13 @@ function initializeApp() {
             return;
         }
         
+        // Ensure the target key exists in multiSelectData
+        if (!multiSelectData[target]) {
+            multiSelectData[target] = [];
+        }
+        
         dropdown.innerHTML = options.map(option => {
-            const isSelected = multiSelectData[target].includes(option);
+            const isSelected = multiSelectData[target] && multiSelectData[target].includes(option);
             return `<div class="multi-select-option ${isSelected ? 'selected' : ''}" data-value="${option}" data-target="${target}">${option}</div>`;
         }).join('');
         
@@ -380,6 +411,11 @@ function initializeApp() {
                 const value = option.dataset.value;
                 const target = option.dataset.target;
                 
+                // Ensure the target key exists
+                if (!multiSelectData[target]) {
+                    multiSelectData[target] = [];
+                }
+                
                 if (multiSelectData[target].includes(value)) {
                     multiSelectData[target] = multiSelectData[target].filter(v => v !== value);
                     option.classList.remove('selected');
@@ -388,19 +424,39 @@ function initializeApp() {
                     option.classList.add('selected');
                 }
                 
-                updateMultiSelectDisplay(target);
+                if (typeof window.updateMultiSelectDisplay === 'function') {
+                    window.updateMultiSelectDisplay(target);
+                }
             });
         });
-    }
+    };
+    
+    // Also create a local reference for use within initializeApp
+    const updateDropdownOptions = window.updateDropdownOptions;
 
-    function updateMultiSelectDisplay(target) {
+    // Make updateMultiSelectDisplay globally accessible
+    window.updateMultiSelectDisplay = function(target) {
         const display = document.querySelector(`.multi-select-display[data-target="${target}"]`);
         if (!display) return;
         
-        const selected = multiSelectData[target];
+        // Handle both camelCase and lowercase targets
+        const dataKey = target;
+        const selected = multiSelectData[dataKey] || [];
+        
+        // Generate placeholder text
+        const placeholderMap = {
+            'subCategory': 'Select sub categories',
+            'size': 'Select sizes',
+            'color': 'Select colors',
+            'shape': 'Select shapes',
+            'neckType': 'Select neck types',
+            'material': 'Select materials',
+            'fragrances': 'Select fragrances',
+            'jarsBottles': 'Select jars & bottles'
+        };
+        const placeholder = placeholderMap[target] || `Select ${target}`;
         
         if (selected.length === 0) {
-            const placeholder = target === 'subCategory' ? 'Select sub categories' : `Select ${target}`;
             display.innerHTML = `<span class="multi-select-placeholder">${placeholder}</span>`;
         } else {
             display.innerHTML = selected.map(value => 
@@ -413,15 +469,21 @@ function initializeApp() {
                     e.stopPropagation();
                     const target = btn.dataset.target;
                     const value = btn.dataset.value;
-                    multiSelectData[target] = multiSelectData[target].filter(v => v !== value);
-                    updateMultiSelectDisplay(target);
+                    if (multiSelectData[target]) {
+                        multiSelectData[target] = multiSelectData[target].filter(v => v !== value);
+                        window.updateMultiSelectDisplay(target);
+                    }
                 });
             });
         }
-    }
+    };
+    
+    // Also create a local reference
+    const updateMultiSelectDisplay = window.updateMultiSelectDisplay;
 
     // Populate Industry Dropdown - Fixed (Single Selection)
-    function populateIndustryDropdown() {
+    // Make populateIndustryDropdown globally accessible
+    window.populateIndustryDropdown = function() {
         const industrySelect = document.getElementById('industry');
         if (!industrySelect) return;
         
@@ -447,7 +509,10 @@ function initializeApp() {
         if (currentValue && industries.includes(currentValue)) {
             industrySelect.value = currentValue;
         }
-    }
+    };
+    
+    // Also create a local reference
+    const populateIndustryDropdown = window.populateIndustryDropdown;
 
     // Initialize multi-select and industry dropdown on page load
     function initializeDropdowns() {
@@ -456,7 +521,9 @@ function initializeApp() {
             display.removeAttribute('data-initialized');
         });
         
-        initMultiSelect();
+        if (typeof window.initMultiSelect === 'function') {
+            window.initMultiSelect();
+        }
         populateIndustryDropdown();
     }
     
@@ -481,7 +548,9 @@ function initializeApp() {
             document.querySelectorAll('.multi-select-display').forEach(display => {
                 display.removeAttribute('data-initialized');
             });
-            initMultiSelect();
+            if (typeof window.initMultiSelect === 'function') {
+                window.initMultiSelect();
+            }
         }, 100);
     });
     
@@ -493,7 +562,9 @@ function initializeApp() {
                 document.querySelectorAll('.multi-select-display').forEach(display => {
                     display.removeAttribute('data-initialized');
                 });
-                initMultiSelect();
+                if (typeof window.initMultiSelect === 'function') {
+                    window.initMultiSelect();
+                }
             }, 200);
         }
     });
@@ -528,16 +599,12 @@ function initializeApp() {
                 description: document.getElementById('description').value,
                 size: multiSelectData.size.join(', '),
                 industry: document.getElementById('industry').value,
-                capacity: document.getElementById('capacity').value,
-                height: document.getElementById('height').value,
-                width: document.getElementById('width').value,
-                weight: document.getElementById('weight').value,
+                jarsBottles: multiSelectData.jarsBottles.join(', '),
                 color: multiSelectData.color.join(', '),
                 shape: multiSelectData.shape.join(', '),
-                neckSize: multiSelectData.neckSize.join(', '),
                 neckType: multiSelectData.neckType.join(', '),
                 material: multiSelectData.material.join(', '),
-                usage: multiSelectData.usage.join(', '),
+                fragrances: multiSelectData.fragrances.join(', '),
                 outofstock: document.getElementById('outofstock').checked,
                 active: document.getElementById('active').checked,
                 featured: document.getElementById('featured').checked,
@@ -715,19 +782,28 @@ function initializeApp() {
             list.appendChild(li);
             input.value = '';
             
-            li.querySelector('.btn-remove').addEventListener('click', () => {
-                li.remove();
-                // Sync to localStorage
-                if (typeof syncUnitsToStorage === 'function') {
-                    syncUnitsToStorage();
-                }
-                // Update dropdowns
-                if (listId === 'industryList') {
-                    populateIndustryDropdown();
-                }
-                // Dispatch event
-                window.dispatchEvent(new Event('unitsUpdated'));
-            });
+            const removeBtn = li.querySelector('.btn-remove');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', () => {
+                    li.remove();
+                    // Sync to localStorage
+                    if (typeof syncUnitsToStorage === 'function') {
+                        syncUnitsToStorage();
+                    }
+                    // Update dropdowns
+                    if (listId === 'industryList') {
+                        populateIndustryDropdown();
+                    }
+                    // Dispatch event
+                    window.dispatchEvent(new Event('unitsUpdated'));
+                    // Re-initialize remove buttons
+                    setTimeout(() => {
+                        if (typeof initializeRemoveButtons === 'function') {
+                            initializeRemoveButtons();
+                        }
+                    }, 100);
+                });
+            }
             
             // Sync to localStorage
             if (typeof syncUnitsToStorage === 'function') {
@@ -759,39 +835,55 @@ function initializeApp() {
     if (addShapeBtn) {
         addShapeBtn.addEventListener('click', () => addUnitItem('shapeList', 'newShape'));
     }
-    if (addNeckSizeBtn) {
-        addNeckSizeBtn.addEventListener('click', () => addUnitItem('neckSizeList', 'newNeckSize'));
-    }
     if (addNeckTypeBtn) {
         addNeckTypeBtn.addEventListener('click', () => addUnitItem('neckTypeList', 'newNeckType'));
     }
     if (addMaterialBtn) {
         addMaterialBtn.addEventListener('click', () => addUnitItem('materialList', 'newMaterial'));
     }
-    if (addUsageBtn) {
-        addUsageBtn.addEventListener('click', () => addUnitItem('usageList', 'newUsage'));
+    if (addFragrancesBtn) {
+        addFragrancesBtn.addEventListener('click', () => addUnitItem('fragrancesList', 'newFragrances'));
+    }
+    if (addJarsBottlesBtn) {
+        addJarsBottlesBtn.addEventListener('click', () => addUnitItem('jarsBottlesList', 'newJarsBottles'));
     }
 
     // Initialize remove buttons for existing units
-    document.querySelectorAll('.btn-remove').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const listItem = e.target.parentElement;
-            const list = listItem.parentElement;
-            listItem.remove();
-            
-            // Sync to localStorage
-            if (typeof syncUnitsToStorage === 'function') {
-                syncUnitsToStorage();
+    function initializeRemoveButtons() {
+        document.querySelectorAll('.btn-remove').forEach(btn => {
+            // Skip if already has listener
+            if (btn.hasAttribute('data-listener-attached')) {
+                return;
             }
+            btn.setAttribute('data-listener-attached', 'true');
             
-            // Update dropdowns
-            if (list && list.id === 'industryList') {
-                populateIndustryDropdown();
-            }
-            
-            // Dispatch event
-            window.dispatchEvent(new Event('unitsUpdated'));
+            btn.addEventListener('click', (e) => {
+                const listItem = e.target.parentElement;
+                const list = listItem.parentElement;
+                listItem.remove();
+                
+                // Sync to localStorage
+                if (typeof syncUnitsToStorage === 'function') {
+                    syncUnitsToStorage();
+                }
+                
+                // Update dropdowns
+                if (list && list.id === 'industryList') {
+                    populateIndustryDropdown();
+                }
+                
+                // Dispatch event
+                window.dispatchEvent(new Event('unitsUpdated'));
+                
+                // Re-initialize remove buttons for remaining items
+                setTimeout(() => {
+                    initializeRemoveButtons();
+                }, 100);
+            });
         });
-    });
+    }
+    
+    // Initialize remove buttons
+    initializeRemoveButtons();
 }
 

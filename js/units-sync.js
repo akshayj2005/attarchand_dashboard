@@ -6,10 +6,10 @@ function syncUnitsToStorage() {
         sizes: [],
         colors: [],
         shapes: [],
-        neckSizes: [],
         neckTypes: [],
         materials: [],
-        usage: []
+        fragrances: [],
+        jarsBottles: []
     };
     
     // Get all units from the page
@@ -18,10 +18,10 @@ function syncUnitsToStorage() {
     const sizeList = document.getElementById('sizeList');
     const colorList = document.getElementById('colorList');
     const shapeList = document.getElementById('shapeList');
-    const neckSizeList = document.getElementById('neckSizeList');
     const neckTypeList = document.getElementById('neckTypeList');
     const materialList = document.getElementById('materialList');
-    const usageList = document.getElementById('usageList');
+    const fragrancesList = document.getElementById('fragrancesList');
+    const jarsBottlesList = document.getElementById('jarsBottlesList');
     
     if (industryList) {
         units.industries = Array.from(industryList.querySelectorAll('.unit-item-text')).map(el => el.textContent);
@@ -38,17 +38,17 @@ function syncUnitsToStorage() {
     if (shapeList) {
         units.shapes = Array.from(shapeList.querySelectorAll('.unit-item-text')).map(el => el.textContent);
     }
-    if (neckSizeList) {
-        units.neckSizes = Array.from(neckSizeList.querySelectorAll('.unit-item-text')).map(el => el.textContent);
-    }
     if (neckTypeList) {
         units.neckTypes = Array.from(neckTypeList.querySelectorAll('.unit-item-text')).map(el => el.textContent);
     }
     if (materialList) {
         units.materials = Array.from(materialList.querySelectorAll('.unit-item-text')).map(el => el.textContent);
     }
-    if (usageList) {
-        units.usage = Array.from(usageList.querySelectorAll('.unit-item-text')).map(el => el.textContent);
+    if (fragrancesList) {
+        units.fragrances = Array.from(fragrancesList.querySelectorAll('.unit-item-text')).map(el => el.textContent);
+    }
+    if (jarsBottlesList) {
+        units.jarsBottles = Array.from(jarsBottlesList.querySelectorAll('.unit-item-text')).map(el => el.textContent);
     }
     
     // Save to localStorage
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Observe all unit lists
         ['industryList', 'subCategoryList', 'sizeList', 'colorList', 'shapeList', 
-         'neckSizeList', 'neckTypeList', 'materialList', 'usageList'].forEach(listId => {
+         'neckTypeList', 'materialList', 'fragrancesList', 'jarsBottlesList'].forEach(listId => {
             const list = document.getElementById(listId);
             if (list) {
                 observer.observe(list, { childList: true, subtree: true });

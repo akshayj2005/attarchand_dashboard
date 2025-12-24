@@ -67,26 +67,6 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group-inline">
-                                        <label for="capacity">Capacity</label>
-                                        <input type="text" id="capacity">
-                                    </div>
-                                    <div class="form-group-inline">
-                                        <label for="height">Height</label>
-                                        <input type="text" id="height">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group-inline">
-                                        <label for="width">Width</label>
-                                        <input type="text" id="width">
-                                    </div>
-                                    <div class="form-group-inline">
-                                        <label for="weight">Weight</label>
-                                        <input type="text" id="weight">
-                                    </div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group-inline">
                                         <label for="color">Color</label>
                                         <div class="multi-select-wrapper">
                                             <div class="multi-select-display" data-target="color">
@@ -107,15 +87,6 @@
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group-inline">
-                                        <label for="neckSize">Neck Size</label>
-                                        <div class="multi-select-wrapper">
-                                            <div class="multi-select-display" data-target="neckSize">
-                                                <span class="multi-select-placeholder">Select neck sizes</span>
-                                            </div>
-                                            <div class="multi-select-dropdown"></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-group-inline">
                                         <label for="neckType">Neck Type</label>
                                         <div class="multi-select-wrapper">
                                             <div class="multi-select-display" data-target="neckType">
@@ -124,8 +95,6 @@
                                             <div class="multi-select-dropdown"></div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="form-row">
                                     <div class="form-group-inline">
                                         <label for="material">Material</label>
                                         <div class="multi-select-wrapper">
@@ -135,11 +104,22 @@
                                             <div class="multi-select-dropdown"></div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="form-row">
                                     <div class="form-group-inline">
-                                        <label for="usage">Usage</label>
+                                        <label for="jarsBottles">Jars & Bottles</label>
                                         <div class="multi-select-wrapper">
-                                            <div class="multi-select-display" data-target="usage">
-                                                <span class="multi-select-placeholder">Select usage</span>
+                                            <div class="multi-select-display" data-target="jarsBottles">
+                                                <span class="multi-select-placeholder">Select jars & bottles</span>
+                                            </div>
+                                            <div class="multi-select-dropdown"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group-inline">
+                                        <label for="fragrances">Fragrances</label>
+                                        <div class="multi-select-wrapper">
+                                            <div class="multi-select-display" data-target="fragrances">
+                                                <span class="multi-select-placeholder">Select fragrances</span>
                                             </div>
                                             <div class="multi-select-dropdown"></div>
                                         </div>
@@ -221,16 +201,21 @@
         function initAddProductPage() {
             // Wait for script.js to be ready
             setTimeout(() => {
-                if (typeof initMultiSelect === 'function') {
-                    initMultiSelect();
+                // Remove initialization flags to allow re-initialization
+                document.querySelectorAll('.multi-select-display').forEach(display => {
+                    display.removeAttribute('data-initialized');
+                });
+                
+                if (typeof window.initMultiSelect === 'function') {
+                    window.initMultiSelect();
                 }
-                if (typeof populateIndustryDropdown === 'function') {
-                    populateIndustryDropdown();
+                if (typeof window.populateIndustryDropdown === 'function') {
+                    window.populateIndustryDropdown();
                 }
                 if (typeof updateAddProductDropdowns === 'function') {
                     updateAddProductDropdowns();
                 }
-            }, 800);
+            }, 1000);
         }
         
         document.addEventListener('DOMContentLoaded', () => {
@@ -240,16 +225,23 @@
         window.addEventListener('partialsLoaded', () => {
             setTimeout(() => {
                 initAddProductPage();
-            }, 500);
+            }, 800);
         });
         
         // Listen for units updates
         window.addEventListener('unitsUpdated', () => {
             setTimeout(() => {
-                if (typeof populateIndustryDropdown === 'function') {
-                    populateIndustryDropdown();
+                if (typeof window.populateIndustryDropdown === 'function') {
+                    window.populateIndustryDropdown();
                 }
-            }, 100);
+                // Re-initialize multi-select dropdowns
+                document.querySelectorAll('.multi-select-display').forEach(display => {
+                    display.removeAttribute('data-initialized');
+                });
+                if (typeof window.initMultiSelect === 'function') {
+                    window.initMultiSelect();
+                }
+            }, 200);
         });
     </script>
 </body>
